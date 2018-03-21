@@ -1,58 +1,53 @@
 package com.nil.action;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Resources {
-private List methodList;
-public Resources parseResources(Scanner scan) {
-	while (scan.hasNext()) {
-		StringBuffer str = new StringBuffer(scan.next().trim());
-		// StringBuffer str = new StringBuffer(line1.trim());
-		// System.out.println("NEXT LINE is " + str.toString());
-		
-		String nextTag = Tag.checkNextTag(str.toString());
-		System.out.println("TAG is "+nextTag);
-		StringBuffer tagType=new StringBuffer("empty");
-		if (nextTag != null) {
-			if(nextTag.substring(0, 1).equals("/")) {
-				 tagType = new StringBuffer("resources");
-			}
-			 
-			System.out.println("NEXT TAG is " + nextTag);
-			switch (nextTag.toString()) {
-			case "get":
-				GetMethod getMethod = new GetMethod();
-				getMethod.parseGetMethod(scan);
-				//resource.parseResources(scan);
-				System.out.println("Get");
-				break;
-			case "post":
-				PostMethod postMethod = new PostMethod();
-				postMethod.parsePostMethod(scan);
-				//resource.parseResources(scan);
-				System.out.println("Post");
-				break;
-			}
-				
+	private ArrayList<Method> methodList = new ArrayList<>();
+
+	public void parseResource(ArrayList strArrayList) throws ResourceException {
+		// TODO Auto-generated method stub
+		Method method = null;
+		ArrayList<String> arr = new ArrayList<>();
+		for (Object obj : strArrayList) {
+			String lineString = (String) obj;
+			int index = lineString.indexOf(":");
+			String tagString = lineString.substring(0, index);
+			int lineStringLength = lineString.length();
+			int spaceIndex = tagString.lastIndexOf(" ");
+			String tagName = tagString.substring(spaceIndex + 1, index);
+
+			if (spaceIndex == 1) {
+				if (method != null) {
+					methodList.add(method);
+				}
+				if (tagName.equals("post")) {
+					method = new PostMethod();
+				} else if (tagName.equals("get")) {
+					method = new GetMethod();
+				}
+			} else if (spaceIndex > 1) {
+				// arr = new ArrayList();
+				arr.add(lineString);
+			} 
+			else if (spaceIndex < 1) {
+				throw new ResourceException("Invalid Format");
+			} 
 		}
-		
+		if (method != null) {
+			method.parse(arr);
+			method.printMethod(strArrayList);
+		}
+
 	}
-	return null;
-	
-}
-private PostMethod parsePostMethod() {
-	// TODO Auto-generated method stub
-	return null;
-}
-private GetMethod parseGetMethod() {
-	return null;
-	// TODO Auto-generated method stub
-	
-}
-private Object parseMethod() {
-	// TODO Auto-generated method stub
-	return null;
-}
+
+	public void printResource() {
+		// TODO Auto-generated method stub
+
+	}
 
 }
